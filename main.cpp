@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <string>
+#include <iomanip>
 
 
 std::vector<std::string> load_instruction(std::string filename) {
@@ -34,21 +36,41 @@ std::array<std::string,4> getInstruction(std::string line){
 	return instruction;
 }
 
+void addi(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+	uint8_t RA = std::stoi(instruction->at(1));
+	uint8_t RB =std::stoi(instruction->at(2));
+	uint8_t imm = std::stoi(instruction->at(3));
+	registers[RA] = registers[RB] + imm;
+	std::cout << std::to_string(registers[RA]) << std::endl;
+}
+
 int main(){
 	//TODO make this an argument
 	std::vector<std::string> instructions = load_instruction("instruct.txt");
 
-	//Memory for CPU I know that RiSC-16 is signed but I don't care
-	int unsigned registers[64];
+	//Registers for CPU I know that RiSC-16 is signed but I don't care
+	std::array<uint8_t,256> registers;
+	registers.fill(0);
+
 
 
 	for(int i = 0; i<instructions.size(); i++){
 		std::array<std::string,4> instruction = getInstruction(instructions.at(i));
 
-		if(instruction[0].compare("NOP") == 0){
-			std::cout << "NOP" << std::endl;
+		if(instruction[0].compare("ADDI") == 0){
+			std::cout << "ADDI" << std::endl;
+			addi(registers, &instruction);
 		}else{
-			std::cout << "Not NOP" << std::endl;
+			std::cout << "Not ADD" << std::endl;
+		}
+	}
+	std::cout << "Register states" << std::endl;
+
+	for(int i = 0; i<registers.size(); i++) {
+		//Print in format R0001 00001
+		std::cout << "R"<< std::setw(3) << std::setfill('0') << i << " " <<  std::setw(3) << std::setfill('0') << std::to_string(registers[i]) << " ";
+		if(i%10 == 0){ //Limit output width
+			std::cout << std::endl;
 		}
 	}
 }
