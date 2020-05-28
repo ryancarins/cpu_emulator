@@ -6,6 +6,7 @@
 #include <string>
 #include <iomanip>
 
+const int NUM_REGISTERS = 256;
 
 std::vector<std::string> load_instruction(std::string filename) {
 	std::ifstream instruction_file;
@@ -36,7 +37,7 @@ std::array<std::string,4> getInstruction(std::string line){
 }
 
 //Store bitwise NAND of registers b and c in register a
-void nand(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+void nand(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
 	uint8_t rc = std::stoi(instruction->at(3));
@@ -44,7 +45,7 @@ void nand(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruc
 }
 
 //Add registers b and c and store in register a
-void add(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+void add(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
 	uint8_t rc = std::stoi(instruction->at(3));
@@ -52,7 +53,7 @@ void add(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruct
 }
 
 //Add register b and a value and store in register a
-void addi(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+void addi(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
 	uint8_t imm = std::stoi(instruction->at(3));
@@ -60,7 +61,7 @@ void addi(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruc
 }
 
 //Subtract register b from c and store in register a
-void sub(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+void sub(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
 	uint8_t rc = std::stoi(instruction->at(3));
@@ -68,7 +69,7 @@ void sub(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruct
 }
 
 //Subtract a value from register b and store in register a
-void subi(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+void subi(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
 	uint8_t imm = std::stoi(instruction->at(3));
@@ -76,12 +77,12 @@ void subi(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruc
 }
 
 //Unconditional jump to instruction by index
-int jmp(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+int jmp(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
 	return(std::stoi(instruction->at(1)));
 }
 
 //Jump to instruction by index if register A is zero
-int jz(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction, int i) {
+int jz(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction, int i) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t line = std::stoi(instruction->at(2));
 	if(registers[ra] != 0){
@@ -92,13 +93,13 @@ int jz(std::array<uint8_t,256> &registers, std::array<std::string,4> *instructio
 }
 
 //Decrement Register A by 1
-void dec(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+void dec(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	registers[ra]--;
 }
 
 //Increment Register A by 1
-void inc(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+void inc(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	registers[ra]++;
 }
@@ -109,7 +110,7 @@ int main(){
 	std::vector<std::string> instructions = load_instruction("instruct.txt");
 
 	//Registers for CPU
-	std::array<uint8_t,256> registers;
+	std::array<uint8_t,NUM_REGISTERS> registers;
 	registers.fill(0);
 
 
@@ -137,7 +138,6 @@ int main(){
 		}else if (instruction[0].compare("SUBI") == 0){
 			subi(registers, &instruction);
 			i++;
-
 		}else if (instruction[0].compare("JMP") == 0){
 			i = jmp(registers, &instruction);
 		}else if (instruction[0].compare("JZ") == 0){
@@ -159,8 +159,9 @@ int main(){
 
 	for(int i = 0; i<registers.size(); i++) {
 		//Print in format R0001 00001
-		std::cout << "R"<< std::setw(3) << std::setfill('0') << i << " " <<  std::setw(3) << std::setfill('0') << std::to_string(registers[i]) << " ";
-		if(i%10 == 0){ //Limit output width
+		std::cout << "R"<< std::setw(3) << std::setfill('0') << i << " "
+			<< std::setw(3) << std::setfill('0') << std::to_string(registers[i]) << " ";
+		if(i%9 == 0){ //Limit output width
 			std::cout << std::endl;
 		}
 	}
