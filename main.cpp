@@ -20,8 +20,7 @@ std::vector<std::string> load_instruction(std::string filename) {
 	return instructions;
 }
 
-//Size is 4 because I'm implementing RiSC-16 instruction set so there will be
-//a max of 4 parts i.e ADD RA, RB, RC https://user.eng.umd.edu/~blj/RiSC/RiSC-isa.pdf
+//Size is 4 because I'm using at most 4 parts for a command
 std::array<std::string,4> getInstruction(std::string line){
 	std::istringstream string_stream(line);
 	std::string curr;
@@ -36,6 +35,7 @@ std::array<std::string,4> getInstruction(std::string line){
 	return instruction;
 }
 
+//Store bitwise NAND if registers b and c to register a
 void nand(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
@@ -43,6 +43,7 @@ void nand(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruc
 	registers[ra] = ~(registers[rb] & registers[rc]);
 }
 
+//Add registers b and c to register a
 void add(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
@@ -50,42 +51,85 @@ void add(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruct
 	registers[ra] = registers[rb] + registers[rc];
 }
 
-
+//Add register b and a value to register a
 void addi(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
 	uint8_t imm = std::stoi(instruction->at(3));
 	registers[ra] = registers[rb] + imm;
-	std::cout << std::to_string(registers[ra]) << std::endl;
 }
+
+//Unconditional jump to instruction by index
+int jmp(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+	return(std::stoi(instruction->at(1)));
+}
+
+//Jump to instruction by index if register A is zero
+int jz(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction, int i) {
+	uint8_t ra = std::stoi(instruction->at(1));
+	uint8_t line = std::stoi(instruction->at(1));
+	if(registers[ra] != 0){
+		return(line);
+	}else{
+		return i+1;
+	}
+}
+
+//Decrement Register A by 1
+void dec(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+	uint8_t ra = std::stoi(instruction->at(1));
+	registers[ra]--;
+}
+
+//Increment Register A by 1
+void inc(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+	uint8_t ra = std::stoi(instruction->at(1));
+	registers[ra]++;
+}
+
 
 int main(){
 	//TODO make this an argument
 	std::vector<std::string> instructions = load_instruction("instruct.txt");
 
-	//Registers for CPU I know that RiSC-16 is signed but I don't care
+	//Registers for CPU
 	std::array<uint8_t,256> registers;
 	registers.fill(0);
 
 
+	std::cout << "-----Instructions Start-----" << std::endl;
 
-	for(int i = 0; i<instructions.size(); i++){
+	int i=0;
+	while(i<instructions.size()){
 		std::array<std::string,4> instruction = getInstruction(instructions.at(i));
-
+		std::cout << instructions[i] << std::endl;
 		if(instruction[0].compare("ADDI") == 0){
-			std::cout << "ADDI" << std::endl;
 			addi(registers, &instruction);
+			i++;
 		}else if (instruction[0].compare("ADD") == 0){
-			std::cout << "ADD" << std::endl;
 			add(registers, &instruction);
+			i++;
 		}else if (instruction[0].compare("NAND") == 0){
-			std::cout << "NAND" << std::endl;
 			nand(registers, &instruction);
+			i++;
+		}else if (instruction[0].compare("JMP") == 0){
+			i = jmp(registers, &instruction);
+		}else if (instruction[0].compare("JZ") == 0){
+			i = jz(registers, &instruction,i);
+		}else if (instruction[0].compare("DEC") == 0){
+			dec(registers, &instruction);
+			i++;
+		}else if (instruction[0].compare("INC") == 0){
+			inc(registers, &instruction);
+			i++;
 		}else{
-			std::cout << "Not ADD" << std::endl;
+			i++;
 		}
 	}
-	std::cout << "Register states" << std::endl;
+
+	std::cout << "-----Instructions End-----" << std::endl;
+
+	std::cout << "-----Start Register States-----" << std::endl;
 
 	for(int i = 0; i<registers.size(); i++) {
 		//Print in format R0001 00001
@@ -94,4 +138,6 @@ int main(){
 			std::cout << std::endl;
 		}
 	}
+	std::cout << std::endl << "-----End Register States-----" << std::endl;
+	return 0;
 }
