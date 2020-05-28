@@ -29,7 +29,7 @@ std::array<std::string,4> getInstruction(std::string line){
 	char delimiter = ' ';
 
 	int i = 0;
-	while(std::getline(string_stream, curr, delimiter)){
+	while(std::getline(string_stream, curr, delimiter) && i<4){
 		instruction[i] = curr;
 		i++;
 	}
