@@ -29,19 +29,27 @@ std::array<std::string,4> getInstruction(std::string line){
 	char delimiter = ' ';
 
 	int i = 0;
-	while(std::getline(string_stream, curr, delimiter) && i<4){
+	while(std::getline(string_stream, curr, delimiter)){
 		instruction[i] = curr;
 		i++;
 	}
 	return instruction;
 }
 
+void add(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+	uint8_t ra = std::stoi(instruction->at(1));
+	uint8_t rb = std::stoi(instruction->at(2));
+	uint8_t rc = std::stoi(instruction->at(3));
+	registers[ra] = registers[rb] + registers[rc];
+}
+
+
 void addi(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
-	uint8_t RA = std::stoi(instruction->at(1));
-	uint8_t RB =std::stoi(instruction->at(2));
+	uint8_t ra = std::stoi(instruction->at(1));
+	uint8_t rb = std::stoi(instruction->at(2));
 	uint8_t imm = std::stoi(instruction->at(3));
-	registers[RA] = registers[RB] + imm;
-	std::cout << std::to_string(registers[RA]) << std::endl;
+	registers[ra] = registers[rb] + imm;
+	std::cout << std::to_string(registers[ra]) << std::endl;
 }
 
 int main(){
@@ -60,6 +68,10 @@ int main(){
 		if(instruction[0].compare("ADDI") == 0){
 			std::cout << "ADDI" << std::endl;
 			addi(registers, &instruction);
+		}
+		else if (instruction[0].compare("ADD") == 0){
+			std::cout << "ADD" << std::endl;
+			add(registers, &instruction);
 		}else{
 			std::cout << "Not ADD" << std::endl;
 		}
