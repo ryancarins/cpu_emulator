@@ -35,7 +35,7 @@ std::array<std::string,4> getInstruction(std::string line){
 	return instruction;
 }
 
-//Store bitwise NAND if registers b and c to register a
+//Store bitwise NAND of registers b and c in register a
 void nand(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
@@ -43,7 +43,7 @@ void nand(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruc
 	registers[ra] = ~(registers[rb] & registers[rc]);
 }
 
-//Add registers b and c to register a
+//Add registers b and c and store in register a
 void add(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
@@ -51,12 +51,28 @@ void add(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruct
 	registers[ra] = registers[rb] + registers[rc];
 }
 
-//Add register b and a value to register a
+//Add register b and a value and store in register a
 void addi(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
 	uint8_t ra = std::stoi(instruction->at(1));
 	uint8_t rb = std::stoi(instruction->at(2));
 	uint8_t imm = std::stoi(instruction->at(3));
 	registers[ra] = registers[rb] + imm;
+}
+
+//Subtract register b from c and store in register a
+void sub(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+	uint8_t ra = std::stoi(instruction->at(1));
+	uint8_t rb = std::stoi(instruction->at(2));
+	uint8_t rc = std::stoi(instruction->at(3));
+	registers[ra] = registers[rb] - registers[rc];
+}
+
+//Subtract a value from register b and store in register a
+void subi(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction) {
+	uint8_t ra = std::stoi(instruction->at(1));
+	uint8_t rb = std::stoi(instruction->at(2));
+	uint8_t imm = std::stoi(instruction->at(3));
+	registers[ra] = registers[rb] - imm;
 }
 
 //Unconditional jump to instruction by index
@@ -67,7 +83,7 @@ int jmp(std::array<uint8_t,256> &registers, std::array<std::string,4> *instructi
 //Jump to instruction by index if register A is zero
 int jz(std::array<uint8_t,256> &registers, std::array<std::string,4> *instruction, int i) {
 	uint8_t ra = std::stoi(instruction->at(1));
-	uint8_t line = std::stoi(instruction->at(1));
+	uint8_t line = std::stoi(instruction->at(2));
 	if(registers[ra] != 0){
 		return(line);
 	}else{
@@ -103,6 +119,9 @@ int main(){
 	while(i<instructions.size()){
 		std::array<std::string,4> instruction = getInstruction(instructions.at(i));
 		std::cout << instructions[i] << std::endl;
+
+		//Not a switch because C++ doesn't allow strings in switches
+		//and code for an enum would be longer anyway
 		if(instruction[0].compare("ADDI") == 0){
 			addi(registers, &instruction);
 			i++;
@@ -112,6 +131,13 @@ int main(){
 		}else if (instruction[0].compare("NAND") == 0){
 			nand(registers, &instruction);
 			i++;
+		}else if (instruction[0].compare("SUB") == 0){
+			sub(registers, &instruction);
+			i++;
+		}else if (instruction[0].compare("SUBI") == 0){
+			subi(registers, &instruction);
+			i++;
+
 		}else if (instruction[0].compare("JMP") == 0){
 			i = jmp(registers, &instruction);
 		}else if (instruction[0].compare("JZ") == 0){
