@@ -141,9 +141,18 @@ int main(){
 	std::cout << "-----Instructions Start-----" << std::endl;
 
 	int i=0;
+	bool debug = getInstruction(instructions.at(0))[0].compare("DEBUG") == 0;
+
+	if(!debug){
+		std::cout << "-----Debugging Is Off-----" << std::endl;
+	}
+
 	while(i<instructions.size()){
 		std::array<std::string,4> instruction = getInstruction(instructions.at(i));
-		std::cout << instructions[i] << std::endl;
+
+		if(debug){
+			std::cout << instructions[i] << std::endl;
+		}
 
 		//Not a switch because C++ doesn't allow strings in switches
 		//and code for an enum would be longer anyway
