@@ -104,6 +104,19 @@ int jl(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *
 	}
 }
 
+//Jump to instruction by index if register A is equal to imm
+int eq(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction, int i) {
+	uint8_t ra = std::stoi(instruction->at(1));
+	uint8_t imm = std::stoi(instruction->at(2));
+	uint8_t line = std::stoi(instruction->at(3));
+	if(registers[ra] == imm) {
+		return(line);
+	}else{
+		return i+1;
+	}
+}
+
+
 //Jump to instruction by index if register A is greater than register B
 int jg(std::array<uint8_t,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction, int i) {
 	uint8_t ra = std::stoi(instruction->at(1));
@@ -179,6 +192,8 @@ int main(){
 			i = jl(registers, &instruction,i);
 		}else if (instruction[0].compare("JG") == 0){
 			i = jg(registers, &instruction,i);
+		}else if (instruction[0].compare("EQ") == 0){
+			i = eq(registers, &instruction,i);
 		}else if (instruction[0].compare("DEC") == 0){
 			dec(registers, &instruction);
 			i++;
