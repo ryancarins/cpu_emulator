@@ -48,53 +48,47 @@ int main(){
 		//Not a switch because C++ doesn't allow strings in switches
 		//and code for an enum would be longer anyway
 		if(instruction[0].compare("ADDI") == 0){
-			cpu.addi(registers, &instruction);
+			cpu.addi(&instruction);
 			i++;
 		}else if (instruction[0].compare("ADD") == 0){
-			cpu.add(registers, &instruction);
+			cpu.add(&instruction);
 			i++;
 		}else if (instruction[0].compare("NAND") == 0){
-			cpu.nand(registers, &instruction);
+			cpu.nand(&instruction);
 			i++;
 		}else if (instruction[0].compare("SUB") == 0){
-			cpu.sub(registers, &instruction);
+			cpu.sub(&instruction);
 			i++;
 		}else if (instruction[0].compare("SUBI") == 0){
-			cpu.subi(registers, &instruction);
+			cpu.subi(&instruction);
 			i++;
 		}else if (instruction[0].compare("JMP") == 0){
-			i = cpu.jmp(registers, &instruction);
+			i = cpu.jmp(&instruction);
 		}else if (instruction[0].compare("JZ") == 0){
-			i = cpu.jz(registers, &instruction,i);
+			i = cpu.jz(&instruction,i);
 		}else if (instruction[0].compare("JL") == 0){
-			i = cpu.jl(registers, &instruction,i);
+			i = cpu.jl(&instruction,i);
 		}else if (instruction[0].compare("JG") == 0){
-			i = cpu.jg(registers, &instruction,i);
+			i = cpu.jg(&instruction,i);
 		}else if (instruction[0].compare("EQ") == 0){
-			i = cpu.eq(registers, &instruction,i);
+			i = cpu.eq(&instruction,i);
 		}else if (instruction[0].compare("DEC") == 0){
-			cpu.dec(registers, &instruction);
+			cpu.dec(&instruction);
 			i++;
 		}else if (instruction[0].compare("INC") == 0){
-			cpu.inc(registers, &instruction);
+			cpu.inc(&instruction);
 			i++;
 		}else{
 			i++;
 		}
 	}
-
 	std::cout << "-----Instructions End-----" << std::endl;
 
+	
 	std::cout << "-----Start Register States-----" << std::endl;
-
-	for(int i = 0; i<cpu.registers.size(); i++) {
-		//Print in format R0001 00001
-		std::cout << "R"<< std::setw(3) << std::setfill('0') << i << " "
-			<< std::setw(5) << std::setfill('0') << std::to_string(registers[i]) << " ";
-		if(i%9 == 0){ //Limit output width
-			std::cout << std::endl;
-		}
-	}
+	cpu.print_states();
 	std::cout << std::endl << "-----End Register States-----" << std::endl;
+
+	
 	return 0;
 }

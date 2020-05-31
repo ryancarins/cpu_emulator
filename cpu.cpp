@@ -27,56 +27,56 @@ std::array<std::string,4> Cpu::getInstruction(std::string line){
 	return instruction;
 }
 
-//Store bitwise NAND of registers b and c in register a
-void Cpu::nand(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
+//Store bitwise NAND of this->registers b and c in register a
+void Cpu::nand(std::array<std::string,4> *instruction) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
 	REG_TYPE rb = std::stoi(instruction->at(2));
 	REG_TYPE rc = std::stoi(instruction->at(3));
-	registers[ra] = ~(registers[rb] & registers[rc]);
+	this->registers[ra] = ~(registers[rb] & registers[rc]);
 }
 
-//Add registers b and c and store in register a
-void Cpu::add(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
+//Add this->registers b and c and store in register a
+void Cpu::add(std::array<std::string,4> *instruction) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
 	REG_TYPE rb = std::stoi(instruction->at(2));
 	REG_TYPE rc = std::stoi(instruction->at(3));
-	registers[ra] = registers[rb] + registers[rc];
+	this->registers[ra] = registers[rb] + registers[rc];
 }
 
 //Add register b and a value and store in register a
-void Cpu::addi(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
+void Cpu::addi(std::array<std::string,4> *instruction) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
 	REG_TYPE rb = std::stoi(instruction->at(2));
 	REG_TYPE imm = std::stoi(instruction->at(3));
-	registers[ra] = registers[rb] + imm;
+	this->registers[ra] = registers[rb] + imm;
 }
 
 //Subtract register b from c and store in register a
-void Cpu::sub(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
+void Cpu::sub(std::array<std::string,4> *instruction) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
 	REG_TYPE rb = std::stoi(instruction->at(2));
 	REG_TYPE rc = std::stoi(instruction->at(3));
-	registers[ra] = registers[rb] - registers[rc];
+	this->registers[ra] = registers[rb] - registers[rc];
 }
 
 //Subtract a value from register b and store in register a
-void Cpu::subi(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
+void Cpu::subi(std::array<std::string,4> *instruction) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
 	REG_TYPE rb = std::stoi(instruction->at(2));
 	REG_TYPE imm = std::stoi(instruction->at(3));
-	registers[ra] = registers[rb] - imm;
+	this->registers[ra] = registers[rb] - imm;
 }
 
 //Unconditional jump to instruction by index
-int Cpu::jmp(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
+int Cpu::jmp(std::array<std::string,4> *instruction) {
 	return(std::stoi(instruction->at(1)));
 }
 
 //Jump to instruction by index if register A is zero
-int Cpu::jz(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction, int i) {
+int Cpu::jz(std::array<std::string,4> *instruction, int i) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
 	REG_TYPE line = std::stoi(instruction->at(2));
-	if(registers[ra] != 0){
+	if(this->registers[ra] != 0){
 		return(line);
 	}else{
 		return i+1;
@@ -84,11 +84,11 @@ int Cpu::jz(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::strin
 }
 
 //Jump to instruction by index if register A is less than register B
-int Cpu::jl(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction, int i) {
+int Cpu::jl(std::array<std::string,4> *instruction, int i) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
 	REG_TYPE rb = std::stoi(instruction->at(2));
 	REG_TYPE line = std::stoi(instruction->at(3));
-	if(registers[ra] < registers[rb]){
+	if(this->registers[ra] < registers[rb]){
 		return(line);
 	}else{
 		return i+1;
@@ -96,11 +96,11 @@ int Cpu::jl(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::strin
 }
 
 //Jump to instruction by index if register A is equal to imm
-int Cpu::eq(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction, int i) {
+int Cpu::eq(std::array<std::string,4> *instruction, int i) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
 	REG_TYPE imm = std::stoi(instruction->at(2));
 	REG_TYPE line = std::stoi(instruction->at(3));
-	if(registers[ra] == imm) {
+	if(this->registers[ra] == imm) {
 		return(line);
 	}else{
 		return i+1;
@@ -109,11 +109,11 @@ int Cpu::eq(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::strin
 
 
 //Jump to instruction by index if register A is greater than register B
-int Cpu::jg(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction, int i) {
+int Cpu::jg(std::array<std::string,4> *instruction, int i) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
 	REG_TYPE rb = std::stoi(instruction->at(2));
 	REG_TYPE line = std::stoi(instruction->at(3));
-	if(registers[ra] > registers[rb]){
+	if(this->registers[ra] > registers[rb]){
 		return(line);
 	}else{
 		return i+1;
@@ -121,13 +121,25 @@ int Cpu::jg(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::strin
 }
 
 //Decrement Register A by 1
-void Cpu::dec(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
+void Cpu::dec(std::array<std::string,4> *instruction) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
-	registers[ra]--;
+	this->registers[ra]--;
 }
 
 //Increment Register A by 1
-void Cpu::inc(std::array<REG_TYPE,NUM_REGISTERS> &registers, std::array<std::string,4> *instruction) {
+void Cpu::inc(std::array<std::string,4> *instruction) {
 	REG_TYPE ra = std::stoi(instruction->at(1));
-	registers[ra]++;
+	this->registers[ra]++;
+}
+
+void Cpu::print_states(){
+	for(int i = 0; i<this->registers.size(); i++) {
+		//Print in format R0001 00001
+		std::cout << "R"<< std::setw(3) << std::setfill('0') << i << " "
+			<< std::setw(5) << std::setfill('0') << std::to_string(this->registers[i]) << " ";
+		if(i%9 == 0){ //Limit output width
+			std::cout << std::endl;
+		}
+	}
+
 }
