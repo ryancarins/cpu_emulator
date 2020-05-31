@@ -7,7 +7,7 @@ const int NUM_REGISTERS = 256;
 class Cpu {
 	public:
 		std::array<REG_TYPE,NUM_REGISTERS> registers;
-		Cpu(std::array<REG_TYPE,NUM_REGISTERS> &registers);
+		Cpu();
 		std::array<std::string,4> getInstruction(std::string line);
 		void nand(std::array<std::string,4> *instruction);
 		void add(std::array<std::string,4> *instruction);

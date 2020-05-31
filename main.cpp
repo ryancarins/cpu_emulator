@@ -23,17 +23,12 @@ std::vector<std::string> load_instruction(std::string filename) {
 int main(){
 	//TODO make this an argument
 	std::vector<std::string> instructions = load_instruction("instruct.txt");
-
-	//Registers for CPU
-	std::array<REG_TYPE,NUM_REGISTERS> registers;
-	registers.fill(0);
-	Cpu cpu = Cpu(registers);
-
-	std::cout << "-----Instructions Start-----" << std::endl;
-
+	Cpu cpu = Cpu();
 	int i=0;
 	bool debug = cpu.getInstruction(instructions.at(0))[0].compare("DEBUG") == 0;
 
+	
+	std::cout << "-----Instructions Start-----" << std::endl;
 	if(!debug){
 		std::cout << "-----Debugging Is Off-----" << std::endl;
 	}

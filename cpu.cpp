@@ -7,8 +7,8 @@
 #include <iomanip>
 #include "cpu.hpp"
 
-Cpu::Cpu(std::array<REG_TYPE,NUM_REGISTERS> &registers){
-	this->registers = registers;
+Cpu::Cpu(){
+	this->registers.fill(0);
 }
 
 
